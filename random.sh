@@ -1,13 +1,22 @@
 #!/usr/bin/env bash
 
-function rand_byte() {
-    echo $((RANDOM % 256))
+function rand_ipv4_byte() {
+    echo -n $((RANDOM % 256))
+}
+
+function rand_ipv6_hex_block() {
+    printf "%04x" $((RANDOM % 65536))
 }
 
 function random_ipv4() {
-    echo "$(rand_byte).$(rand_byte).$(rand_byte).$(rand_byte)"
+    printf "%s.%s.%s.%s" "$(rand_ipv4_byte)" "$(rand_ipv4_byte)" "$(rand_ipv4_byte)" "$(rand_ipv4_byte)"
 }
 
+function random_ipv6() {
+    printf "%s:%s:%s:%s:%s:%s:%s:%s" \
+    "$(rand_ipv6_hex_block)" "$(rand_ipv6_hex_block)" "$(rand_ipv6_hex_block)" "$(rand_ipv6_hex_block)" \
+    "$(rand_ipv6_hex_block)" "$(rand_ipv6_hex_block)" "$(rand_ipv6_hex_block)" "$(rand_ipv6_hex_block)"
+}
 
 function randomize_ipv4_set() {
     declare -i times=$1
@@ -21,3 +30,6 @@ function randomize_ipv4_set() {
 
     echo -e "$ip_addresses"
 }
+
+randomize_ipv4_set 10 '\n'
+random_ipv6
