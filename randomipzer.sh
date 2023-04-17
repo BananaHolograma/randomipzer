@@ -58,19 +58,25 @@ EXAMPLES:
 
 OPTIONS:
     -m  --mode   <ipv4,ipv6,both>     Choose the ip category to randomly generate the values
-    -t, --times   <int>               Number of ip addresses to generate
+    -t, --times   <int>               (mandatory) Number of ip addresses to generate
     -d  --delimiter <value>           Delimiter to separate the ip addresses in the output
-    -v  --version                     Display the actual version
     -h  --help                        Print help information
 EOF
 }
 
 
-declare -gi TIMES
+declare -i TIMES
+declare -i TIMES_FLAG=0
 declare -g  MODE='ipv4'
 
 to_lowercase() {
     echo "$1" | tr '[:upper:]' '[:lower:]'
+}
+
+is_empty() {
+    local value=$1 
+
+    [[ -z $value ]]
 }
 
 set_mode() {
@@ -106,17 +112,33 @@ done
 
 while getopts ":t:m:d:h:" arg; do
     case $arg in
-        t) TIMES="$OPTARG";;
+        t) 
+            TIMES="$OPTARG"
+            TIMES_FLAG=1
+            if is_empty $TIMES || [[ ! $TIMES -gt 0 ]] ; then 
+                echo -e "-t/--times option for the amount of values to be generated is not valid"
+                exit 2
+            fi 
+        ;;
         m) set_mode "$OPTARG";;
         d) DELIMITER=${OPTARG:-'\n'};;
+        :)
+             echo -e "The option -$OPTARG requires an argument"
+             exit 1
+        ;;
         h | *)
             show_help
+            exit 0
         ;;
     esac
 
 done
 shift $(( OPTIND - 1))
 
+if [[ $TIMES_FLAG -eq 0 ]]; then 
+        echo -e 'This script requires a --times option value'
+        exit 3
+fi 
 
 if [ "$MODE" = 'ipv4' ]; then
     randomize_ipv4_set $TIMES "$DELIMITER"
