@@ -110,7 +110,7 @@ for arg in "$@"; do
   esac
 done
 
-while getopts ":t:m:d:h:" arg; do
+while getopts ":t:m:d:h" arg; do
     case $arg in
         t) 
             TIMES="$OPTARG"
