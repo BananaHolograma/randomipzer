@@ -31,5 +31,15 @@ function randomize_ipv4_set() {
     echo -e "$ip_addresses"
 }
 
-randomize_ipv4_set 10 '\n'
-random_ipv6
+function randomize_ipv6_set() {
+    declare -i times=$1
+    local delimiter=${2:-','}
+    local ip_addresses=''
+
+    for index in $(seq 0 $times); do 
+        ip_addresses+="$(random_ipv6)"
+        [[ $index -lt $times ]] && ip_addresses+="$delimiter"
+    done 
+
+    echo -e "$ip_addresses"
+}
